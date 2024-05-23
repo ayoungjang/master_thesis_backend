@@ -4,7 +4,6 @@ from sqlalchemy import (
     String,
     DateTime,
     func,
-    Enum,
     BINARY,
 )
 import sqlalchemy
@@ -14,12 +13,12 @@ from src.common.lib import generate_random_uuid
 
 class BaseMixin:
     id = Column(Integer, primary_key=True, index=True)
-    created_at = Column(DateTime, nullable=False, default=func.utc_timestamp())
+    created_at = Column(DateTime, nullable=False, default=func.now())
     updated_at = Column(
         DateTime,
         nullable=False,
-        default=func.utc_timestamp(),
-        onupdate=func.utc_timestamp(),
+        default=func.now(),
+        onupdate=func.now(),
     )
 
     def __init__(self):
@@ -59,7 +58,6 @@ class BaseMixin:
                 session.commit()
             return obj
         except Exception as e:
-            print("kakao444?", e)
             session.rollback()
 
             raise e
@@ -131,11 +129,6 @@ class BaseMixin:
         query = obj._session.query(cls)
         query = query.filter(*cond)
 
-        #          and_(
-        #     cls.st_date >= '2023-12-10 00:00',
-        #     cls.en_date <= '2023-12-13 00:00'
-        # )
-
         obj._q = query
         return obj
 
@@ -183,7 +176,6 @@ class BaseMixin:
             self._session.commit()
 
     def all(self):
-        # print(self.served)
         result = self._q.all()
         self.close()
         return result
@@ -201,9 +193,8 @@ class BaseMixin:
 
 
 class Users(Base, BaseMixin):
-    __tablename__ = "users"
-    __table_args__ = {"schema": "trott"}
-    status = Column(Enum("active", "deleted", "blocked"), default="active")
+    __tablename__ = "user"
+    id = Column(String(length=60), nullable=True)
     pw = Column(String(length=60), nullable=True)
     name = Column(String(length=255), nullable=True)
     user_id = Column(
@@ -213,6 +204,3 @@ class Users(Base, BaseMixin):
         unique=True,
         nullable=False,
     )
-
-
-

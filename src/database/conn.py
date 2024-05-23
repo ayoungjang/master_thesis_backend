@@ -1,42 +1,18 @@
 from fastapi import FastAPI
-from sqlalchemy import create_engine, text
+from sqlalchemy import Table, Column, String, BINARY, MetaData, create_engine, inspect,DateTime,func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-
-
-def _database_exist(engine, schema_name):
-    query = text(
-        f"SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '{schema_name}'"
-    )
-
-    with engine.connect() as conn:
-        result_proxy = conn.execute(query)
-        result = result_proxy.scalar()
-        return bool(result)
-
-
-def _drop_database(engine, schema_name):
-    with engine.connect() as conn:
-        conn.execute(f"DROP DATABASE {schema_name};")
-
-
-def _create_database(engine, schema_name):
-    with engine.connect() as conn:
-        conn.execute(
-            text(
-                f"CREATE DATABASE {schema_name} CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;"
-            )
-        )
-
+from src.common.lib import generate_random_uuid
+import datetime
 
 class SQLAlchemy:
     def __init__(self, app: FastAPI = None, **kwargs):
         self._engine = None
         self._session = None
+        self._metadata = MetaData()
         self._base = declarative_base()  # Add this line
         if app is not None:
             self.init_app(app=app, **kwargs)
-
     def init_app(self, app: FastAPI, **kwargs):
         """
         DB 초기화 함수
@@ -45,43 +21,16 @@ class SQLAlchemy:
         :return:
         """
         database_url = kwargs.get("DB_URL")
-        pool_recycle = kwargs.setdefault("DB_POOL_RECYCLE", 900)
-        # is_testing = kwargs.setdefault("TEST_MODE", True)
-        is_testing = False
-        echo = kwargs.setdefault("DB_ECHO", False)
-
         self._engine = create_engine(
             database_url,
-            echo=False,
-            pool_recycle=pool_recycle,
-            pool_pre_ping=True,
+          connect_args={"check_same_thread": False}
         )
-
-        if is_testing:  # create schema
-            db_url = self._engine.url
-
-            # if db_url.host != "localhost":
-            #     raise Exception("db host must be 'localhost' in test environment")
-            except_schema_db_url = f"{db_url.drivername}://{db_url.username}:{db_url.password}@{db_url.host}:3306"
-
-            schema_name = db_url.database
-
-            temp_engine = create_engine(
-                except_schema_db_url,
-                echo=echo,
-                pool_recycle=pool_recycle,
-                pool_pre_ping=True,
-            )
-            # if _database_exist(temp_engine, schema_name):
-            #     _drop_database(temp_engine, schema_name)
-            # _create_database(temp_engine, schema_name)
-            if not _database_exist(temp_engine, schema_name):
-                _create_database(temp_engine, schema_name)
-            temp_engine.dispose()
 
         self._session = sessionmaker(
             autocommit=False, autoflush=False, bind=self._engine
         )
+        self.create_table()  # Ensure tables are created when the app initializes
+
 
     def get_db(self):
         """
@@ -96,6 +45,19 @@ class SQLAlchemy:
             yield db_session
         finally:
             db_session.close()
+    
+    def create_table(self):
+        inspector = inspect(self._engine)
+        if not inspector.has_table('user'):
+            user = Table('user', self._metadata,
+                        Column('id', String(length=60), nullable=True),
+                        Column('pw', String(length=60), nullable=True),
+                        Column('name', String(length=255), nullable=True),
+                        Column('created_at', DateTime, default=func.now()),
+                        Column('updated_at', DateTime, default=func.now(), onupdate=func.now()),
+                        Column('user_id', BINARY, primary_key=True, default=generate_random_uuid, unique=True, nullable=False))
+            self._metadata.create_all(self._engine)
+
 
     @property
     def session(self):
@@ -108,3 +70,4 @@ class SQLAlchemy:
 
 db = SQLAlchemy()
 Base = declarative_base()
+

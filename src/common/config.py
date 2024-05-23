@@ -21,7 +21,7 @@ class Config:
     TEST_MODE: bool = False
     DB_URL: str = environ.get(
         "DB_URL",
-        "mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:3306/{DB_SCHEMA}?charset=utf8mb4",
+        "sqlite:///./dashboard.db"
     )
 
 
@@ -41,7 +41,7 @@ class ProdConfig(Config):
 @dataclass
 class TestConfig(Config):
     DB_URL: str = (
-        "mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:3306/{DB_SCHEMA}?charset=utf8mb4"
+     "sqlite:///./dashboard.db"
     )
     TRUSTED_HOSTS = ["*"]
     ALLOW_SITE = ["*"]
