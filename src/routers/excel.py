@@ -1,5 +1,5 @@
 import datetime
-from fastapi import APIRouter, File,UploadFile,Query
+from fastapi import APIRouter, File, Form,UploadFile,Query
 import shutil
 import os
 from fastapi.responses import FileResponse
@@ -21,7 +21,7 @@ if not os.path.exists(RESULT_PATH):
 excel = APIRouter(prefix="/excel")
 
 @excel.post("/upload", tags=["Excel"], status_code=201)
-async def upload_file(type: str = Query("Strip", enum=["Disk", "Strip"]), data: UploadFile = File(...), refer: UploadFile = File(...)):
+async def upload_file(  type: str = Form(...), data: UploadFile = File(...), refer: UploadFile = File(...)):
     try:
         if not os.path.exists(EXCEL_PATH):
             os.mkdir(EXCEL_PATH)
@@ -41,7 +41,7 @@ async def upload_file(type: str = Query("Strip", enum=["Disk", "Strip"]), data: 
             os.makedirs(result_dir)
         
         
-        script_path = os.path.abspath(f"src/Rscript/{type}/index.R")
+        script_path = os.path.abspath(f"src/Rscript/{type.lower()}/index.R")
         
         # Find Rscript path
         rscript_path = subprocess.check_output(["which", "Rscript"]).strip().decode('utf-8')
@@ -50,7 +50,7 @@ async def upload_file(type: str = Query("Strip", enum=["Disk", "Strip"]), data: 
 
         # Get the list of generated plot files
         plot_files = [os.path.join(result_dir, f) for f in os.listdir(result_dir) if f.endswith(".png")]
-        print()
+        print(plot_files)
         plot_files_with_names = [{"path": os.path.join(f), "name": f.split('_')[1].split('.')[0]} for f in plot_files]
 
         

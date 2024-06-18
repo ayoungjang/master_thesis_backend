@@ -16,7 +16,7 @@ reference_path <- args[2]
 output_path <- args[3]
 
 
-get_data <- function(data_path, reference_path,output_path) {
+get_data <- function(data_path, reference_path, output_path) {
   file <- data_path
   file2 <- reference_path
 
@@ -85,7 +85,7 @@ get_data <- function(data_path, reference_path,output_path) {
     sigma ~ dunif(0.01, 100)
     tau.lab <- pow(sigma.lab, -2)
     sigma.lab ~ dunif(0.01, 100)
-    
+
     }", file = file.path(wbwd, "model.txt"))
 
     # bugs data
@@ -105,7 +105,7 @@ get_data <- function(data_path, reference_path,output_path) {
 
     # bugs fit
     bugs.fit <- bugs(
-      #bugs.directory = "/home/ayoung/.wine/drive_c/Program Files/WinBUGS14",
+      # bugs.directory = "/home/ayoung/.wine/drive_c/Program Files/WinBUGS14",
       model.file = file.path(wbwd, "model.txt"), data = bugs.data, inits = bugs.inits,
       parameters.to.save = c("beta", "b.lab", "sigma", "sigma.lab"),
       n.chains = 2, n.iter = 5100, n.burnin = 100, n.thin = 10, debug = FALSE, DIC = FALSE,
@@ -215,9 +215,15 @@ get_data <- function(data_path, reference_path,output_path) {
   for (type in unique_types) {
     type_data <- Gradient_data[Gradient_data$Gradient_test == type, ]
     results_list[[type]] <- calculation(type_data)
-  }
 
-  return(results_list)
+    if (grepl("/", type)) {
+      split_str <- strsplit(type, "/")[[1]][1]
+    } else {
+      split_str <- type
+    }
+
+    draw_plot(results_list[[type]], split_str, output_path)
+  }
 }
 
-get_data(data_path, reference_path,output_path)
+get_data(data_path, reference_path, output_path)

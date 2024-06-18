@@ -1,0 +1,73 @@
+display(log)
+check(Z:/home/ayoung/master_thesis_backend/src/Rscript/strip/WinBUGS/model.txt)
+model is syntactically correct
+data(Z:/home/ayoung/master_thesis_backend/src/Rscript/strip/WinBUGS/data.txt)
+data loaded
+compile(2)
+model compiled
+inits(1,Z:/home/ayoung/master_thesis_backend/src/Rscript/strip/WinBUGS/inits1.txt)
+chain initialized but other chain(s) contain uninitialized variables
+inits(2,Z:/home/ayoung/master_thesis_backend/src/Rscript/strip/WinBUGS/inits2.txt)
+model is initialized
+gen.inits()
+command #Bugs:gen.inits cannot be executed (is greyed out)
+thin.updater(10)
+update(10)
+set(beta)
+set(b.lab)
+set(sigma)
+set(sigma.lab)
+update(500)
+coda(*,Z:/home/ayoung/master_thesis_backend/src/Rscript/strip/WinBUGS/coda)
+stats(*)
+
+Node statistics
+	 node	 mean	 sd	 MC error	2.5%	median	97.5%	start	sample
+	b.lab[1]	-0.1721	0.3689	0.0123	-1.057	-0.1033	0.5215	11	1000
+	b.lab[2]	0.2031	0.3653	0.0119	-0.4274	0.1488	1.046	11	1000
+	b.lab[3]	0.2416	0.385	0.01435	-0.4666	0.1802	1.093	11	1000
+	b.lab[4]	0.4055	0.437	0.02333	-0.206	0.3196	1.393	11	1000
+	b.lab[5]	-0.1821	0.3625	0.01355	-0.9933	-0.1244	0.4518	11	1000
+	b.lab[6]	0.04734	0.3399	0.01277	-0.6377	0.02277	0.7906	11	1000
+	b.lab[7]	-0.5775	0.5173	0.02913	-1.708	-0.5095	0.114	11	1000
+	b.lab[8]	-0.08672	0.3493	0.01263	-0.9031	-0.04953	0.5811	11	1000
+	b.lab[9]	0.03153	0.3469	0.01216	-0.6445	0.02824	0.7648	11	1000
+	b.lab[10]	0.156	0.3556	0.01334	-0.4956	0.09811	0.9754	11	1000
+	b.lab[11]	-0.1257	0.3533	0.01309	-0.8848	-0.07523	0.5832	11	1000
+	b.lab[12]	0.09485	0.3603	0.0118	-0.569	0.06008	0.8761	11	1000
+	b.lab[13]	0.05293	0.3373	0.01084	-0.6462	0.03017	0.7959	11	1000
+	b.lab[14]	-0.005946	0.3466	0.012	-0.7483	0.001251	0.6922	11	1000
+	b.lab[15]	-0.2928	0.4071	0.01588	-1.231	-0.1937	0.3524	11	1000
+	b.lab[16]	-0.02978	0.3422	0.01024	-0.7821	-0.01702	0.6115	11	1000
+	b.lab[17]	-0.1597	0.3494	0.01118	-0.9675	-0.09741	0.5145	11	1000
+	b.lab[18]	0.3094	0.3976	0.01776	-0.3266	0.2465	1.202	11	1000
+	b.lab[19]	0.05838	0.3476	0.01018	-0.6407	0.02328	0.824	11	1000
+	b.lab[20]	0.02621	0.3361	0.01348	-0.6504	0.008393	0.7421	11	1000
+	beta[1]	4.279	0.626	0.01835	3.037	4.271	5.534	11	1000
+	beta[2]	0.262	0.8824	0.02368	-1.494	0.2464	1.985	11	1000
+	beta[3]	-0.1119	0.8724	0.02384	-1.725	-0.09539	1.588	11	1000
+	beta[4]	0.06176	0.9309	0.03277	-1.722	0.04881	1.832	11	1000
+	beta[5]	0.3719	0.877	0.02355	-1.488	0.3852	2.019	11	1000
+	beta[6]	0.1032	0.9224	0.02775	-1.698	0.1525	1.861	11	1000
+	beta[7]	-0.3524	0.8869	0.03086	-2.068	-0.3324	1.392	11	1000
+	beta[8]	-0.4976	0.8953	0.02742	-2.323	-0.4987	1.254	11	1000
+	beta[9]	0.5566	0.8996	0.03114	-1.073	0.5387	2.349	11	1000
+	beta[10]	-0.2066	0.8787	0.03021	-1.907	-0.2181	1.482	11	1000
+	beta[11]	0.07948	0.898	0.03145	-1.755	0.08182	1.892	11	1000
+	beta[12]	0.0933	0.9136	0.03404	-1.667	0.1163	1.906	11	1000
+	beta[13]	-0.3532	0.8837	0.02284	-2.059	-0.3591	1.375	11	1000
+	beta[14]	0.05408	0.8843	0.03187	-1.611	0.07593	1.717	11	1000
+	beta[15]	-0.3173	0.8835	0.02841	-2.061	-0.2924	1.377	11	1000
+	beta[16]	-0.2224	0.8845	0.02373	-1.98	-0.2075	1.468	11	1000
+	beta[17]	-0.4033	0.8853	0.02856	-2.123	-0.3864	1.357	11	1000
+	beta[18]	-0.2976	0.878	0.02593	-2.072	-0.2829	1.381	11	1000
+	beta[19]	-0.2313	0.8548	0.02722	-1.885	-0.2025	1.462	11	1000
+	beta[20]	0.6388	0.8714	0.02334	-0.9707	0.6561	2.416	11	1000
+	sigma	2.77	0.1137	0.00352	2.553	2.764	3.01	11	1000
+	sigma.lab	0.4108	0.2337	0.01598	0.03069	0.4028	0.8736	11	1000
+history(*,Z:/home/ayoung/master_thesis_backend/src/Rscript/strip/WinBUGS/history.odc)
+
+History
+
+save(Z:/home/ayoung/master_thesis_backend/src/Rscript/strip/WinBUGS/log.odc)
+save(Z:/home/ayoung/master_thesis_backend/src/Rscript/strip/WinBUGS/log.txt)

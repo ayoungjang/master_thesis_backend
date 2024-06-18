@@ -13,5 +13,5 @@ model {
     sigma ~ dunif(0.01, 100)
     tau.lab <- pow(sigma.lab, -2)
     sigma.lab ~ dunif(0.01, 100)
-    
+
     }
