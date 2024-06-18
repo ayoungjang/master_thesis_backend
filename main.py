@@ -13,6 +13,7 @@ from src.middlewares.trusted_hosts import TrustedHostMiddleware
 from src.routers.user import user
 from src.routers.auth import auth
 from src.routers.excel import excel
+from src.routers.index import router
 
 import dotenv
 import os
@@ -47,7 +48,7 @@ def create_app():
         allowed_hosts=conf().TRUSTED_HOSTS,
         except_path=["/health"],
     )
-
+    app.include_router(router)
     app.include_router(auth)
     app.include_router(user,prefix="/api", dependencies=[Depends(API_KEY_HEADER)])
     app.include_router(excel,prefix="/api", dependencies=[Depends(API_KEY_HEADER)])
@@ -58,4 +59,5 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    # uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", port=8000, reload=True)

@@ -4,13 +4,13 @@ import re
 import jwt
 import sqlalchemy.exc
 
-# from jwt.exceptions import ExpiredSignatureError, DecodeError
+from jwt.exceptions import ExpiredSignatureError, DecodeError
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from src.common.consts import EXCEPT_PATH_LIST, EXCEPT_PATH_REGEX
 from src.database.conn import db
-# from errors import exceptions as ex
+from src.errors import exceptions as ex
 
 from src.common import config, consts
 from src.errors.exceptions import APIException, SqlFailureEx
