@@ -48,7 +48,11 @@ draw_plot <- function(selected_data, type, output_path) {
       axis.title.x = element_text(size = 16),
       plot.title = element_text(hjust = 0.5, size = 20),
       plot.margin = unit(c(1, 1, 2, 1), "lines")
-    )
+    ) +
+    scale_shape_manual(name = "Legend", values = c("Mode MICs" = 0, "Mean MICs" = 15, "Reference MICs" = 16)) +
+    scale_color_manual(name = "Legend", values = c("Reference MICs" = "black")) +
+    scale_linetype_manual(name = "Legend", values = c("Interval censoring" = "solid"))
+
   # Save the plot to the specified output path
   ggsave(paste0(output_path, "/figure_", type, ".png"), width = 10, height = 8)
 }

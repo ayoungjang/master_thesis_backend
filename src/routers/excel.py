@@ -23,19 +23,20 @@ excel = APIRouter(prefix="/excel")
 @excel.post("/upload", tags=["Excel"], status_code=201)
 async def upload_file(  type: str = Form(...), data: UploadFile = File(...), refer: UploadFile = File(...)):
     try:
-        if not os.path.exists(EXCEL_PATH):
-            os.mkdir(EXCEL_PATH)
+        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
+        if not os.path.exists(os.path.join(EXCEL_PATH,timestamp)):
+            os.mkdir(os.path.join(EXCEL_PATH,timestamp))
     
-        data_file_path = os.path.join(EXCEL_PATH, data.filename)
+        data_file_path = os.path.join(EXCEL_PATH,timestamp, data.filename)
         with open(data_file_path, "wb") as buffer:
             shutil.copyfileobj(data.file, buffer)
 
-        ref_file_path = os.path.join(EXCEL_PATH, refer.filename)
+        ref_file_path = os.path.join(EXCEL_PATH,timestamp, refer.filename)
         with open(ref_file_path, "wb") as buffer:
             shutil.copyfileobj(refer.file, buffer)
 
         # Create a unique output directory based on the current timestamp
-        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         result_dir = os.path.join(RESULT_PATH, type.lower(),timestamp)
         if not os.path.exists(result_dir):
             os.makedirs(result_dir)
