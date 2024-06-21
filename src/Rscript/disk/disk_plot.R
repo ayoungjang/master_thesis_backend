@@ -4,7 +4,7 @@ draw_plot <- function(data,name,output_path){
   if (!dir.exists(output_path)) {
     dir.create(output_path, recursive = TRUE)
   }
-  
+  data <- na.omit(data)
   df <- data.frame(
     Mean = as.numeric(data$Mean),
     SD = as.numeric(data$SD),

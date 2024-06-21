@@ -13,7 +13,7 @@ class Config:
     """
     기본 Configuration
     """
-
+    
     BASE_DIR: str = base_dir
     DB_POOL_RECYCLE: int = 900
     DB_ECHO: bool = True
@@ -28,7 +28,7 @@ class Config:
 @dataclass
 class LocalConfig(Config):
     TRUSTED_HOSTS = ["*"]
-    ALLOW_SITE = ["*"]
+    ALLOW_SITE =  ["http://localhost:5173"]
     DEBUG: bool = True
 
 

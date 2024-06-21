@@ -30,17 +30,20 @@ draw_plot <- function(selected_data, type, output_path) {
   ggplot(df) +
     geom_hline(yintercept = seq(0.5, n + 0.5, 1), color = "grey90") +
     geom_hline(yintercept = c(10.5, 20.5), linetype = "solid", linewidth = 1) +
-    geom_point(aes(x = mode.log.MIC, y = 1:n), shape = 0, linewidth = 2) +
-    geom_point(aes(x = E.log.MIC, y = 1:n - 0.25), shape = 15, linewidth = 2) +
+    geom_point(aes(x = mode.log.MIC, y = 1:n, shape = "Mode MICs"), size = 2) +
+    geom_point(aes(x = E.log.MIC, y = 1:n - 0.25, shape = "Mean MICs"), size = 2) +
     geom_segment(aes(x = lower.log.MIC, xend = upper.log.MIC, y = 1:n - 0.25, yend = 1:n - 0.25)) +
-    geom_point(aes(x = lower.log.MIC.ref, y = 1:n + 0.25), color = "black", size = 2) +
-    geom_point(aes(x = upper.log.MIC.ref, y = 1:n + 0.25), shape = 16, color = "black", size = 2) +
+    geom_point(aes(x = lower.log.MIC.ref, y = 1:n + 0.25, shape = "Reference MICs"), color = "black", size = 2) +
+    geom_point(aes(x = upper.log.MIC.ref, y = 1:n + 0.25, shape = "Reference MICs"), color = "black", size = 2) +
     geom_segment(aes(x = lower.log.MIC.ref, xend = upper.log.MIC.ref, y = 1:n + 0.25, yend = 1:n + 0.25), color = "black") +
     # Axis labels and title
     scale_x_continuous("MIC", breaks = seq(-1, 9), labels = 2^(-1:9)) +
     scale_y_continuous("", breaks = 1:n, labels = species_labels) +
     labs(title = type) +
-    # Theme adjustments
+    scale_shape_manual(
+      values = c("Mode MICs" = 0, "Mean MICs" = 15, "Reference MICs" = 16, "Interval Censoring" = 1),
+      labels = c("Mode MICs", "Mean MICs", "Reference MICs")
+    ) +
     theme_minimal() +
     theme(
       axis.text.x = element_text(size = 14),
@@ -48,11 +51,8 @@ draw_plot <- function(selected_data, type, output_path) {
       axis.title.x = element_text(size = 16),
       plot.title = element_text(hjust = 0.5, size = 20),
       plot.margin = unit(c(1, 1, 2, 1), "lines")
-    ) +
-    scale_shape_manual(name = "Legend", values = c("Mode MICs" = 0, "Mean MICs" = 15, "Reference MICs" = 16)) +
-    scale_color_manual(name = "Legend", values = c("Reference MICs" = "black")) +
-    scale_linetype_manual(name = "Legend", values = c("Interval censoring" = "solid"))
+    )
 
   # Save the plot to the specified output path
-  ggsave(paste0(output_path, "/figure_", type, ".png"), width = 10, height = 8)
+  ggsave(paste0(output_path, "/figure_", type, ".png"), width = 15, height = 8)
 }
