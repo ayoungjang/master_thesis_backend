@@ -45,7 +45,7 @@ async def token_login(
             headers = request.headers
             return JSONResponse(
                 status_code=200,
-                content=dict(status=200, data=headers.get("Authorization")),
+                content=dict(status=200, access_token=headers.get("Authorization")),
             )
         else:
             raise

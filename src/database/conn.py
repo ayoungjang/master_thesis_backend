@@ -15,8 +15,7 @@ class SQLAlchemy:
             self.init_app(app=app, **kwargs)
     def init_app(self, app: FastAPI, **kwargs):
         """
-        DB 초기화 함수
-        :param app: FastAPI 인스턴스
+        :db reset 
         :param kwargs:
         :return:
         """
@@ -34,7 +33,7 @@ class SQLAlchemy:
 
     def get_db(self):
         """
-        요청마다 DB 세션 유지 함수
+        session
         :return:
         """
         if self._session is None:

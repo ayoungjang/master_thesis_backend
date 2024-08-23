@@ -33,12 +33,13 @@ def create_app():
     app = FastAPI(docs_url="/docs/api", redoc_url="/redoc/api")
     conf_dict = asdict(c)
     db.init_app(app, **conf_dict)  # database initialization
-
+    origins = ["*"]
     # middleware
     app.add_middleware(middleware_class=BaseHTTPMiddleware, dispatch=access_control)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=conf().ALLOW_SITE,
+        # allow_origins=conf().ALLOW_SITE,
+        allow_origins=origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

@@ -33,7 +33,7 @@ draw_plot <- function(selected_data, type, output_path) {
     geom_point(aes(x = mode.log.MIC, y = 1:n, shape = "Mode MICs"), size = 2) +
     geom_point(aes(x = E.log.MIC, y = 1:n - 0.25, shape = "Mean MICs"), size = 2) +
     geom_segment(aes(x = lower.log.MIC, xend = upper.log.MIC, y = 1:n - 0.25, yend = 1:n - 0.25)) +
-    geom_point(aes(x = lower.log.MIC.ref, y = 1:n + 0.25, shape = "Reference MICs"), color = "black", size = 2) +
+    geom_point(aes(x = lower.log.MIC.ref, y = 1:n + 0.25, shape = "Interval Censoring"), color = "black", size = 2) +
     geom_point(aes(x = upper.log.MIC.ref, y = 1:n + 0.25, shape = "Reference MICs"), color = "black", size = 2) +
     geom_segment(aes(x = lower.log.MIC.ref, xend = upper.log.MIC.ref, y = 1:n + 0.25, yend = 1:n + 0.25), color = "black") +
     # Axis labels and title
@@ -41,8 +41,8 @@ draw_plot <- function(selected_data, type, output_path) {
     scale_y_continuous("", breaks = 1:n, labels = species_labels) +
     labs(title = type) +
     scale_shape_manual(
-      values = c("Mode MICs" = 0, "Mean MICs" = 15, "Reference MICs" = 16, "Interval Censoring" = 1),
-      labels = c("Mode MICs", "Mean MICs", "Reference MICs")
+      values = c("Mode MICs" = 0, "Mean MICs" = 15, "Reference MICs" = 16, "Interval Censoring" = 21),
+      labels = c("Mode MICs", "Mean MICs", "Interval Censoring","Reference MICs")
     ) +
     theme_minimal() +
     theme(
