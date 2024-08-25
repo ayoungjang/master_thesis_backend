@@ -8,8 +8,9 @@ from src.database.schemas import Users
 from src.database.models import Token
 import subprocess 
 from src.common.consts import EXCEL_PATH, RESULT_PATH
-
-
+import json
+import pandas as pd
+import matplotlib.pyplot as plt
 
 if not os.path.exists(EXCEL_PATH):
     os.makedirs(EXCEL_PATH)
@@ -50,23 +51,33 @@ async def upload_file(  type: str = Form(...), data: UploadFile = File(...), ref
         subprocess.call([rscript_path, "--vanilla", script_path, data_file_path, ref_file_path, result_dir])
 
         # Get the list of generated plot files
-        plot_files = [os.path.join(result_dir, f) for f in os.listdir(result_dir) if f.endswith(".png")]
-        print(plot_files)
-        plot_files_with_names = [{"path": os.path.join(f), "name": f.split('_')[1].split('.')[0]} for f in plot_files]
+        plot_files = [os.path.join(result_dir, f) for f in os.listdir(result_dir) if f.endswith(".json")]
 
         
+        plot_files_with_names = [{"path": os.path.join(f),"dir":f.split('/')[2], "name": f.split('/')[3].split('.')[0]} for f in plot_files]
+
+        print(plot_files_with_names)
         if not plot_files:
             print("plot not found")
             # raise DataProcessingError(msg="Result plot not found", detail="The R script did not generate the expected result plot.")
-
-        return JSONResponse(content={"msg": "file upload success", "files": plot_files_with_names})
+        # return JSONResponse(content={"msg": "file upload success", "files": "test"})
+        return JSONResponse(content={"msg": "file upload success", "data": plot_files_with_names})
+        #return JSONResponse(content={"msg": "file upload success", "dir": result_dir,"files":plot_files_with_names})
     except subprocess.CalledProcessError as e:
         print("data processing err")
         # raise DataProcessingError(ex=e)
     except Exception as e:
-        print("file upload err")
+        print("file upload err",e)
         # raise FileUploadError(ex=e)
-    
-
         # raise HTTPException(status_code=StatusCode.HTTP_404, detail="File not found")
+@excel.get("/plots/{type}/{timestamp}/{name}", tags=["Excel"], status_code=201)
+def getTypeData(type: str, timestamp: str, name: str):
+    json_file_path = os.path.join(RESULT_PATH, type.lower(), timestamp, f"{name}.json")
+   
+    if not os.path.exists(json_file_path):
+        return JSONResponse(status_code=404, content={"message": "File not found"})
     
+    with open(json_file_path, 'r') as f:
+        data = json.load(f)
+
+    return JSONResponse(content=data)

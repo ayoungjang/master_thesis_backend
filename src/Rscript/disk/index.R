@@ -3,6 +3,7 @@ library(dplyr)
 library(openxlsx)
 library(ggplot2)
 library(gmodels)
+library(jsonlite)
 
 args <- commandArgs(trailingOnly = TRUE)
 data_path <- args[1]
@@ -67,7 +68,9 @@ get_data <- function(data_path, reference_path, output_path) {
       process_data(., Fasit_data)
 
     disk_list[[disk_type]] <- processed_data
-
+    json_file_path <- file.path(output_path, paste0(disk_type, ".json"))
+    write_json(processed_data, path = json_file_path, pretty = TRUE)
+ 
     draw_plot(processed_data, disk_type, output_path)
   }
 

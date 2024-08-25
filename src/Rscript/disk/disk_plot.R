@@ -20,11 +20,11 @@ draw_plot <- function(data, name, output_path) {
   d <- 0.15
   ggplot(df) +
     geom_point(aes(x = Mean, y = Strain_no, shape = "Mean", color = "SD"), size = 2) +
-    geom_point(aes(x = SD, y = Strain_no, shape = "SD", color = "SD"), size = 2, position = position_nudge(y = -d)) +
+    # geom_point(aes(x = SD, y = Strain_no, shape = "SD", color = "SD"), size = 2, position = position_nudge(y = -d)) +
     geom_errorbarh(aes(xmin = Lower, xmax = Upper, y = Strain_no, color = "SD"), height = 0.2) +
     geom_errorbarh(aes(xmin = min, xmax = max, y = Strain_no, color = "Min/Max"), height = 0.2, position = position_nudge(y = +d)) +
-    geom_point(aes(x = K_res, y = Strain_no, shape = "K-res", color = "SD"), size = 2, position = position_nudge(y = d)) +
-    geom_point(aes(x = EDL, y = Strain_no, shape = "EDL", color = "SD"), size = 2, position = position_nudge(y = d)) +
+    geom_point(aes(x = K_res, y = Strain_no, shape = "K-res", color = "Kres"), size = 2, position = position_nudge(y = d)) +
+    geom_point(aes(x = EDL, y = Strain_no, shape = "EDL", color = "EDL"), size = 2, position = position_nudge(y = d)) +
     labs(x = "mm zone", y = "Strain_no", shape = "Variable", title = name, color = "Legend") +
     theme_classic() +
     theme(
@@ -39,7 +39,7 @@ draw_plot <- function(data, name, output_path) {
       values = c("Mean" = 15, "SD" = 16, "K-res" = 2, "EDL" = 1),
       name = ""
     ) +
-    scale_color_manual(values = c("Min/Max" = "red", "SD" = "black"), name = "Range") +
+    scale_color_manual(values = c("Min/Max" = "red", "SD" = "black", "EDL" = "blue", "Kres" = "#ff5e00"), name = "Range") +
     scale_x_continuous(
       breaks = c(seq(0, 34, by = 1)),
       labels = c(seq(0, 34, by = 1))
