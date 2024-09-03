@@ -221,24 +221,23 @@ get_data <- function(data_path, reference_path, output_path) {
 
   for (type in unique_types) {
     type_data <- Gradient_data[Gradient_data$Gradient_test == type, ]
-    results_list[[type]] <- calculation(type_data)
-
     if (grepl("/", type)) {
       split_str <- strsplit(type, "/")[[1]][1]
     } else {
       split_str <- type
     }
     if (split_str == "Liofilchem") split_str <- "MTS"
+    results_list[split_str] <- calculation(type_data)
+
 
     if (!dir.exists(output_path)) {
       dir.create(output_path, recursive = TRUE)
     }
 
-    data_to_write <- unlist(results_list[[type]][1], recursive = FALSE)
+    chg_data <- do.call(rbind.data.frame,results_list[split_str])   
 
     json_file_path <- file.path(output_path, paste0(split_str, ".json"))
-    write_json(results_list[[type]][1], path = json_file_path, pretty = TRUE)
-
+    write_json(chg_data, path = json_file_path, pretty = TRUE)
     # draw_plot(results_list[[type]], split_str, output_path)
   }
 }
