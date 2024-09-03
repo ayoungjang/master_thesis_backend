@@ -21,6 +21,23 @@ if not os.path.exists(RESULT_PATH):
 
 excel = APIRouter(prefix="/excel")
 
+def get_json_files_in_subdirs(result_dir):
+    result = {}
+
+    # Walk through the directory tree
+    for root, dirs, files in os.walk(result_dir):
+        # Check if current directory has no subdirectories (it's a leaf directory)
+        if not dirs:
+            # Filter out JSON files
+            json_files = [f for f in files if f.endswith('.json')]
+            if json_files:
+                # Get the name of the current directory (leaf directory)
+                lowest_dir = os.path.basename(root)
+                # Add to result dictionary
+                result[lowest_dir] = json_files
+
+    return result
+
 @excel.post("/upload", tags=["Excel"], status_code=201)
 async def upload_file(  type: str = Form(...), data: UploadFile = File(...), refer: UploadFile = File(...)):
     try:
@@ -49,13 +66,22 @@ async def upload_file(  type: str = Form(...), data: UploadFile = File(...), ref
         rscript_path = subprocess.check_output(["which", "Rscript"]).strip().decode('utf-8')
         
         subprocess.call([rscript_path, "--vanilla", script_path, data_file_path, ref_file_path, result_dir])
+        # Get the dictionary of folder names and JSON files
+        tmp_path = get_json_files_in_subdirs(result_dir)
 
-        # Get the list of generated plot files
-        plot_files = [os.path.join(result_dir, f) for f in os.listdir(result_dir) if f.endswith(".json")]
+        # Flatten the dictionary into a list of tuples (folder_name, json_file)
+        plot_files = [(folder, os.path.join(result_dir, folder, f)) for folder, files in tmp_path.items() for f in files]
 
-        
-        plot_files_with_names = [{"path": os.path.join(f),"dir":f.split('/')[2], "name": f.split('/')[3].split('.')[0]} for f in plot_files]
-
+        # Generate the list of dictionaries with additional information
+        plot_files_with_names = [
+            {
+                "anti_type": folder_name,
+                "path": file_path,
+                "dir":timestamp,
+                "name": os.path.splitext(os.path.basename(file_path))[0]
+            }
+            for folder_name, file_path in plot_files
+        ]
         print(plot_files_with_names)
         if not plot_files:
             print("plot not found")
@@ -70,9 +96,9 @@ async def upload_file(  type: str = Form(...), data: UploadFile = File(...), ref
         print("file upload err",e)
         # raise FileUploadError(ex=e)
         # raise HTTPException(status_code=StatusCode.HTTP_404, detail="File not found")
-@excel.get("/plots/{type}/{timestamp}/{name}", tags=["Excel"], status_code=201)
-def getTypeData(type: str, timestamp: str, name: str):
-    json_file_path = os.path.join(RESULT_PATH, type.lower(), timestamp, f"{name}.json")
+@excel.get("/plots/{type}/{timestamp}/{anti}/{name}", tags=["Excel"], status_code=201)
+def getTypeData(type: str, timestamp: str, anti:str,name: str):
+    json_file_path = os.path.join(RESULT_PATH, type.lower(), timestamp, anti,f"{name}.json")
    
     if not os.path.exists(json_file_path):
         return JSONResponse(status_code=404, content={"message": "File not found"})

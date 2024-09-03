@@ -9,15 +9,17 @@ args <- commandArgs(trailingOnly = TRUE)
 data_path <- args[1]
 reference_path <- args[2]
 output_path <- args[3]
-
+anti_type <- "linezolid10"
+output_path <- paste0(output_path, "/", anti_type)
 # Create output directory if it does not exist
-# if (!dir.exists(output_path)) {
-#   dir.create(output_path, recursive = TRUE)
-# }
+if (!dir.exists(output_path)) {
+  dir.create(output_path, recursive = TRUE)
+}
 
 get_data <- function(data_path, reference_path, output_path) {
   file <- data_path
   file2 <- reference_path
+
 
   Fasit_data <- read.xlsx(xlsxFile = file2)
   Lre_data <- read.xlsx(xlsxFile = file)
@@ -45,8 +47,14 @@ get_data <- function(data_path, reference_path, output_path) {
 
     agg_data <- aggregate(Disk_diff_Linezolid10 ~ Strain_no, data = data, FUN = function(x) c(Mean = mean(x), SD = sd(x)))
     agg_data <- data.frame(Strain_no = agg_data$Strain_no, Mean = agg_data$Disk_diff_Linezolid10[, "Mean"], SD = agg_data$Disk_diff_Linezolid10[, "SD"])
-    agg_data$Lower <- agg_data$Mean - 1.96 * agg_data$SD
-    agg_data$Upper <- agg_data$Mean + 1.96 * agg_data$SD
+    strain_counts <- aggregate(Disk_diff_Linezolid10 ~ Strain_no, data = data, FUN = length)
+    colnames(strain_counts)[2] <- "counts" # change the column name
+
+    agg_data$counts <- strain_counts$counts
+
+    n <- nrow(agg_data)
+    agg_data$Lower <- agg_data$Mean - 1.96 * agg_data$SD / sqrt(n)
+    agg_data$Upper <- agg_data$Mean + 1.96 * agg_data$SD / sqrt(n)
 
     min_max_values <- tapply(data$Disk_diff_Linezolid10, data$Strain_no, FUN = function(x) c(Min = min(x, na.rm = TRUE), Max = max(x, na.rm = TRUE)))
 
@@ -70,8 +78,8 @@ get_data <- function(data_path, reference_path, output_path) {
     disk_list[[disk_type]] <- processed_data
     json_file_path <- file.path(output_path, paste0(disk_type, ".json"))
     write_json(processed_data, path = json_file_path, pretty = TRUE)
- 
-    draw_plot(processed_data, disk_type, output_path)
+
+    # draw_plot(processed_data, disk_type, output_path)
   }
 
   return(disk_list)

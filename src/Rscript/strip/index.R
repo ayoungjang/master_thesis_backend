@@ -8,12 +8,19 @@ library(R2WinBUGS)
 library(gmodels)
 library(gdata)
 library(statip)
+library(jsonlite)
 source("src/Rscript/strip/strip_plot.R")
 
 args <- commandArgs(trailingOnly = TRUE)
 data_path <- args[1]
 reference_path <- args[2]
 output_path <- args[3]
+anti_type <- "linezolid10"
+output_path <- paste0(output_path, "/", anti_type)
+# Create output directory if it does not exist
+if (!dir.exists(output_path)) {
+  dir.create(output_path, recursive = TRUE)
+}
 
 
 get_data <- function(data_path, reference_path, output_path) {
@@ -210,7 +217,7 @@ get_data <- function(data_path, reference_path, output_path) {
   }
 
   unique_types <- unique(Gradient_data$Gradient_test)
-  results_list <- list()
+  results_list <- setNames(vector("list", length(unique_types)), unique_types)
 
   for (type in unique_types) {
     type_data <- Gradient_data[Gradient_data$Gradient_test == type, ]
@@ -221,8 +228,18 @@ get_data <- function(data_path, reference_path, output_path) {
     } else {
       split_str <- type
     }
+    if (split_str == "Liofilchem") split_str <- "MTS"
 
-    draw_plot(results_list[[type]], split_str, output_path)
+    if (!dir.exists(output_path)) {
+      dir.create(output_path, recursive = TRUE)
+    }
+
+    data_to_write <- unlist(results_list[[type]][1], recursive = FALSE)
+
+    json_file_path <- file.path(output_path, paste0(split_str, ".json"))
+    write_json(results_list[[type]][1], path = json_file_path, pretty = TRUE)
+
+    # draw_plot(results_list[[type]], split_str, output_path)
   }
 }
 

@@ -1,2 +1,2 @@
-./uploads
-./results
+./uploads/*
+./results/*
