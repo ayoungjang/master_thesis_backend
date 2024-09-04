@@ -64,6 +64,7 @@ get_data <- function(data_path, reference_path, output_path) {
     upper <- ifelse(event == 3, log.MIC, ifelse(event == 2, log.MIC, 100))
   })
 
+
   calculation <- function(data) {
     data$Strain_no <- as.factor(data$Strain_no)
     data$Species <- as.factor(data$Species)
@@ -73,6 +74,10 @@ get_data <- function(data_path, reference_path, output_path) {
 
     data$Species <- drop.levels(data$Species)
     head(data$Species)
+    counts <- data %>%
+      count(Strain_no) %>%
+      rename(count = n) # Rename the count column to "count"
+
 
     # working dir
     wbwd <- file.path(getwd(), "src/Rscript/strip", "WinBUGS")
@@ -136,6 +141,8 @@ get_data <- function(data_path, reference_path, output_path) {
       lower.diff.log.MIC = apply(b.lab, 2, quantile, 0.025),
       upper.diff.log.MIC = apply(b.lab, 2, quantile, 0.975)
     )
+
+
 
     data.newdata <- with(data, expand.grid(Strain_no = levels(Strain_no)))
 
@@ -210,9 +217,12 @@ get_data <- function(data_path, reference_path, output_path) {
 
     data.newdata <- merge(data.newdata, data.sub, sort = FALSE)
     data.newdata$upper.log.MIC.ref <- as.double(data.newdata$upper.log.MIC.ref)
+    # Merge counts into data.newdata
+    data.newdata <- merge(data.newdata, counts, by = "Strain_no", all.x = TRUE)
 
-    n <- ncol(X.samplepred)
-    output <- list(data.newdata, n)
+    num <- ncol(X.samplepred)
+
+    output <- list(data.newdata, num)
     return(output)
   }
 
@@ -220,6 +230,7 @@ get_data <- function(data_path, reference_path, output_path) {
   results_list <- setNames(vector("list", length(unique_types)), unique_types)
 
   for (type in unique_types) {
+    # counts <- data.frame()
     type_data <- Gradient_data[Gradient_data$Gradient_test == type, ]
     if (grepl("/", type)) {
       split_str <- strsplit(type, "/")[[1]][1]
@@ -229,15 +240,15 @@ get_data <- function(data_path, reference_path, output_path) {
     if (split_str == "Liofilchem") split_str <- "MTS"
     results_list[split_str] <- calculation(type_data)
 
-
     if (!dir.exists(output_path)) {
       dir.create(output_path, recursive = TRUE)
     }
 
-    chg_data <- do.call(rbind.data.frame,results_list[split_str])   
+    chg_data <- do.call(rbind.data.frame, results_list[split_str])
 
     json_file_path <- file.path(output_path, paste0(split_str, ".json"))
     write_json(chg_data, path = json_file_path, pretty = TRUE)
+
     # draw_plot(results_list[[type]], split_str, output_path)
   }
 }
