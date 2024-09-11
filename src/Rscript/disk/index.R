@@ -48,9 +48,9 @@ get_data <- function(data_path, reference_path, output_path) {
     agg_data <- aggregate(Disk_diff_Linezolid10 ~ Strain_no, data = data, FUN = function(x) c(Mean = mean(x), SD = sd(x)))
     agg_data <- data.frame(Strain_no = agg_data$Strain_no, Mean = agg_data$Disk_diff_Linezolid10[, "Mean"], SD = agg_data$Disk_diff_Linezolid10[, "SD"])
     strain_counts <- aggregate(Disk_diff_Linezolid10 ~ Strain_no, data = data, FUN = length)
-    colnames(strain_counts)[2] <- "counts" # change the column name
+    colnames(strain_counts)[2] <- "count" # change the column name
 
-    agg_data$counts <- strain_counts$counts
+    agg_data$count <- strain_counts$count
 
     n <- nrow(agg_data)
     agg_data$Lower <- agg_data$Mean - 1.96 * agg_data$SD / sqrt(n)
