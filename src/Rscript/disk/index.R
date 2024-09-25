@@ -33,7 +33,7 @@ get_data <- function(data_path, reference_path, output_path) {
   Lre_data$Strain_no <- as.factor(Lre_data$Strain_no)
 
   Disk_data <- Lre_data %>%
-    select(Strain_no, Species, Disk_diff_Linezolid10, Disk_diffusion) %>%
+    select("Strain_no", "Species", "Disk_diff_Linezolid10", "Disk_diffusion") %>%
     na.omit()
 
   disk_types <- unique(Disk_data$Disk_diffusion)
@@ -58,8 +58,9 @@ get_data <- function(data_path, reference_path, output_path) {
 
     min_max_values <- tapply(data$Disk_diff_Linezolid10, data$Strain_no, FUN = function(x) c(Min = min(x, na.rm = TRUE), Max = max(x, na.rm = TRUE)))
 
-    agg_data$max <- unlist(lapply(min_max_values, function(x) x["Max"]))
-    agg_data$min <- unlist(lapply(min_max_values, function(x) x["Min"]))
+    # if value is under 6mm , should be change to 6.
+    agg_data$max <- unlist(lapply(min_max_values, function(x) ifelse(x["Max"] == 0, 6, x["Max"])))
+    agg_data$min <- unlist(lapply(min_max_values, function(x) ifelse(x["Min"] == 0, 6, x["Min"])))
 
     fasit_values <- Fasit_data[Fasit_data$Strain_no %in% unique(data$Strain_no), c("Strain_no", "K_res", "EDL")]
     fasit_values$Strain_no <- as.factor(fasit_values$Strain_no)
